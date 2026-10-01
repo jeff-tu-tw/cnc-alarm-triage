@@ -75,7 +75,7 @@ cnc-alarm-triage/
 ```bash
 pip install -r requirements.txt
 export TOKENPAPA_API_KEY=your_key
-python main.py "M03 為什麼一直主軸過熱？"
+python main.py "Why does the spindle of M03 keep overheating?"
 python eval_batch.py
 ```
 
