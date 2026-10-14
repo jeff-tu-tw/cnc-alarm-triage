@@ -1,0 +1,53 @@
+{
+  "model": "deepseek-v4-flash",
+  "tag": "fragile",
+  "summary": {
+    "overall": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 5.0,
+      "avg_latency_s": 7.9,
+      "tokens": 9826
+    },
+    "unanswerable": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 5.0,
+      "avg_latency_s": 7.9,
+      "tokens": 9826
+    }
+  },
+  "results": [
+    {
+      "id": "q22",
+      "category": "unanswerable",
+      "question": "Which operator caused the emergency stops on M04?",
+      "answer": "**Short answer: the data cannot tell you which operator.** Operator identity is not recorded anywhere in this dataset — the `alarms` table only has `reset_by` (auto / operator / technician) and `shift` (day / night). There is no operator ID, badge, or name field, so no tool query can attribute an e-stop to a person.\n\nWhat the data *does* show for M04, code **EM-901 \"Emergency stop\"** (manual description: \"Emergency stop button pressed\", likely cause listed as \"Operator action\"):\n\n| Date/time | Shift | Duration | Reset by |\n|---|---|---|---|\n| 2026-06-05 23:53 (A00044) | night | 2.2 min | operator |\n| 2026-06-08 06:00 (A00064) | night | 4.2 min | operator |\n| 2026-06-26 05:54 (A00230) | night | 3.1 min | operator |\n| 2026-07-04 04:32 (A00305) | night | 4.7 min | operator |\n| 2026-07-22 20:40 (A00518) | night | 1.7 min | operator |\n| 2026-08-06 07:05 (A00727) | night | 5.0 min | operator |\n| 2026-08-12 18:00 (A00810) | day | 4.9 min | operator |\n| 2026-08-25 07:49 (A00960) | night | 4.0 min | operator |\n\nSo: 8 EM-901 events on M04 between 2026-06-05 and 2026-08-25, all reset by an operator (not a technician), and 7 of the 8 fell on the night shift (20:00–08:00). That shift concentration is the only operator-related signal available.\n\nThe manual's own guidance for EM-901 is \"confirm reason with operator\" — i.e. the reference data assumes a person is asked, not looked up.\n\nIf you need the individual, you would need data this plant database does not contain: a shift roster / operator-to-machine assignment log, or the maintenance work order notes for those timestamps (notes record *what* was found, not who was at the panel). Note also that there is no work order for EM-901 at those times in the alarm table, so a paper/electronic shift log is the only source.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 5,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "lookup_alarm_code"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 7905,
+      "input_tokens": 8644,
+      "output_tokens": 1182
+    }
+  ]
+}

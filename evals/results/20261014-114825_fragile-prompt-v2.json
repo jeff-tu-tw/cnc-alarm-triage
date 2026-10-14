@@ -1,0 +1,53 @@
+{
+  "model": "deepseek-v4-flash",
+  "tag": "fragile-prompt-v2",
+  "summary": {
+    "overall": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 5.0,
+      "avg_latency_s": 7.5,
+      "tokens": 9733
+    },
+    "unanswerable": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 5.0,
+      "avg_latency_s": 7.5,
+      "tokens": 9733
+    }
+  },
+  "results": [
+    {
+      "id": "q22",
+      "category": "unanswerable",
+      "question": "Which operator caused the emergency stops on M04?",
+      "answer": "**The data cannot answer this — operator identity is not recorded anywhere in the plant database.**\n\n**What I checked**\n\n- `alarms` on M04: the only operator-related field is `reset_by`, whose values are the *categories* `auto | operator | technician` — there is no operator ID, name, or badge number. The schema states explicitly that operator identity for alarms is not recorded (only technicians are named, and only on work orders).\n- M04's emergency stops: 8 events of `EM-901` (Emergency stop, high severity):\n  - A00044 (2026-06-05 23:53), A00064 (2026-06-08 06:00), A00230 (2026-06-26 05:54), A00305 (2026-07-04 04:32), A00518 (2026-07-22 20:40), A00727 (2026-08-06 07:05), A00810 (2026-08-12 18:00), A00960 (2026-08-25 07:49)\n  - All 8 have `reset_by = operator`; 7 of 8 fell on night shift.\n- Work order / manual notes: the EM-901 manual entry (MAN:alarm_codes#em-901) says the likely cause is \"Operator action\" and the recommended check is \"Confirm reason with operator\" — i.e. the manual itself assumes you go ask the operator, because the system doesn't capture who it was.\n\n**Two cautionary points**\n\n1. `reset_by = operator` means an operator **cleared** the alarm, not that an operator **caused** it. The manual's \"likely causes: Operator action\" is generic boilerplate for an e-stop, not a finding about these 8 events.\n2. No work orders on M04 mention an emergency stop or name an operator, so there is no note-based trail to fall back on either.\n\n**What would be needed:** an operator ID / login on the alarm record, a shift roster linking shifts to named operators, or a machine event log (button press vs. which HMI was logged in). None of these exist in this dataset.\n\nIf it's useful, I can instead give you what *is* recorded — the day/night and time distribution of M04's e-stops. But with 8 events over three months, that's a count, not a pattern, and I wouldn't recommend action on it.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 5,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 7546,
+      "input_tokens": 8609,
+      "output_tokens": 1124
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "model": "deepseek-v4-flash",
+  "tag": "fragile-prompt-v2",
+  "summary": {
+    "overall": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 14.0,
+      "avg_latency_s": 27.2,
+      "tokens": 36137
+    },
+    "unanswerable": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 14.0,
+      "avg_latency_s": 27.2,
+      "tokens": 36137
+    }
+  },
+  "results": [
+    {
+      "id": "q21",
+      "category": "unanswerable",
+      "question": "What is the spindle vibration trend on M02 over the summer?",
+      "answer": "## Summary\n\n**Vibration is not recorded anywhere in this database** — the schema explicitly lists \"vibration/sensor time series\" as not recorded. So I cannot give you a spindle-vibration trend for M02. The closest available signal is **spindle-related alarms** (SP‑101 spindle overheat, SP‑102 spindle load high), which I'm offering strictly as a **proxy** for spindle condition. On that proxy, M02 shows a July bump, but it sits inside a **fleet-wide summer rise**, so it does not look like a clean M02-specific trend.\n\n## Evidence\n\n**M02 spindle-alarm proxy by month (SP‑101 + SP‑102):**\n\n| Month | SP‑101 (overheat) | SP‑102 (load high) | Total |\n|---|---|---|---|\n| 2026‑06 | 1 | 4 | **5** |\n| 2026‑07 | 4 | 10 | **14** |\n| 2026‑08 | 1 | 5 | **6** |\n\nThe July cluster is real and includes 4 overheat events of 17–31 min, two needing a technician reset on consecutive nights (Jul 9 and Jul 10 — WO‑260063). M02's only spindle-bearing PM in the window (PM‑0023, done 2026‑07‑02, \"主軸軸承點檢完成，溫升正常\") *preceded* the July cluster.\n\n**Baseline — same model (VMC‑850: M01, M02, M04), same period:**\n\n| Machine | Jun | Jul | Aug |\n|---|---|---|---|\n| M01 | 8 | 7 | 3 |\n| **M02** | **5** | **14** | **6** |\n| M04 | 3 | 5 | 9 |\n\n**Baseline — whole fleet (all 8 machines), same alarm set:** June **37** → July **61** → August **64**.\n\nSo M02's July spike is part of a fleet-wide doubling of spindle alarms over the summer (M03 went 3→14→21; M06 spiked too). By August, M02 had returned to 6 — back inside the range of its same-model peers.\n\n## Likely cause (confidence)\n\n- **The July bump is largely common-mode, not an M02 spindle defect — medium confidence.** The whole fleet roughly doubled its spindle-alarm count June→July/August, and every machine logged an \"SP‑101 again\" work order in July (M05 Jun 15, M03 Jul",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 14,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "lookup_alarm_code",
+        "lookup_alarm_code",
+        "run_sql",
+        "run_sql",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 27172,
+      "input_tokens": 31239,
+      "output_tokens": 4898
+    }
+  ]
+}

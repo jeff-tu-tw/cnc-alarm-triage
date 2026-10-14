@@ -1,0 +1,120 @@
+{
+  "model": "deepseek-v4-flash",
+  "tag": "hyphen-fix",
+  "summary": {
+    "overall": {
+      "n": 2,
+      "correct": 2,
+      "evidence_cited": "1/1",
+      "avg_tool_calls": 14.0,
+      "avg_latency_s": 26.6,
+      "tokens": 69701
+    },
+    "rca": {
+      "n": 2,
+      "correct": 2,
+      "evidence_cited": "1/1",
+      "avg_tool_calls": 14.0,
+      "avg_latency_s": 26.6,
+      "tokens": 69701
+    }
+  },
+  "results": [
+    {
+      "id": "q13",
+      "category": "rca",
+      "question": "Why did M03 keep throwing spindle overheat alarms from late July to early August?",
+      "answer": "## Summary\nM03's spindle overheat (SP-101) alarms in late July–early August were caused by a **clogged coolant pump suction filter** starving the spindle cooling jacket of coolant. The filter service was an overdue PM that had been deferred for a rush production order. Once the filter was replaced on 12 Aug, alarms stopped. Confidence: **high**.\n\n## Evidence\n\n**1. The pattern is real and concentrated**\n- M03 has 19 SP-101 events overall, but **17 of them fall in 26 Jul – 11 Aug**; only 2 earlier (08 Jul, 13 Jul) and **0 after 12 Aug**.\n- M03's SP-101 count (19) is far above every other machine. Baseline check: **M07, the only other VMC-1100**, logged just 5 SP-101 all period and only 1 in the same window. M03 is well outside that baseline, so this is a genuine anomaly, not background noise.\n- Day/night split is even (9/10), so it is not shift/operator-driven.\n\n**2. It coincided with a parallel coolant-pressure problem**\n- M03's CL-302 (coolant pressure low): 12 events before 26 Jul, **19 in the window**, 1 after 12 Aug — spiking and escalating alongside SP-101 from ~12 Jul.\n- The manual explicitly links these: a clogged suction filter is the most common cause of CL-302, and \"reduced flow to the spindle cooling jacket raises spindle temperature and can lead to spindle overheat alarms (SP-101)\" (MAN:coolant_system#low-coolant-pressure; SP-101 causes include insufficient coolant flow — MAN:alarm_codes#sp-101).\n\n**3. The downtime was repeatedly reset instead of fixed**\n- Technicians logged repeated \"reset and resumed\"/\"let spindle cool\" calls: WO-260061, WO-260084, WO-260097, WO-260098, WO-260113, WO-260117, WO-260119, WO-260120, WO-260121, WO-260122, WO-260127, WO-260130, WO-260131, WO-260134. WO-260120 (02 Aug) already suggested \"checking coolant flow to spindle.\"\n\n**4. What changed: a deferred filter PM**\n- PM-0026 (coolant pump filter, 30-day interval) was **planned 2026-07-10, done 2026-08-12 — status done_late** (~33 days late). The previous service (PM-0006) was done on time on 10 Jun.\n- The deferral is documented: WO-260064 (10 Jul) \"Coolant pump filter PM deferred – rush order (Q3 housing batch), line cannot stop\"; WO-260092 (24 Jul) \"filter PM still pending… CL-302 a few times/day, monitoring.\"\n\n**5. The fix confirms the cause**\n- WO-260140 (12 Aug): \"Repeated SP-101 + CL-302. Opened coolant pump: suction filter heavily clogged with chips and sludge. Replaced filter, flushed tank. Coolant pressure back to 4.3 bar (was ~2.1).\"\n- WO-260141 (12 Aug): \"PM done late (planned 7/10, deferred). Filter was severely clogged.\"\n- SP-101 count after 12 Aug = 0. This before/after break is the strongest single piece of evidence.\n\n**Not the cause:** SP-102 (spindle load high) also appears, but as a secondary/aggravating load factor, not the driver. I also checked for common-mode: there was a site-wide power event (PW-701) at 28 Jul 14:05–14:06 hitting M01–M06 within ~1 minute, but that is a single instant unrelated to a 2.5-week SP-101 pattern.\n\n## Likely cause (confidence: high)\nDeferred coolant-filter PM (PM-0026) → progressively clogged suction filter (chips/sludge, accelerated by the high-volume Q3 housing batch) → low coolant pressure (CL-302) → reduced flow to the spindle cooling jacket → spindle overheat (SP-101) → repeated cooldown/reset that never addressed the root cause until the filter was changed on 12 Aug.\n\n## Recommended next steps\n1. **Do not defer M03's next coolant pump filter PM** (PM-0056, due 2026-09-11). Treat it as fixed-date given the history.\n2. **Review the 30-day interval** while high-chip jobs (Q3 housing batch) run — the manual notes filters clog faster on high-volume aluminium/cast-iron work; consider shortening the interval or adding a pressure check during such batches.\n3. **Check the same risk fleet-wide**: other machines show CL-302 activity (M01, M02, M07, M08), and if any have a deferred/overdue coolant-filter PM, clear it before it escalates to SP-101.\n4. **Track spindle temperature/coolant pressure** on M03 for the next few weeks to confirm the fix holds (0 SP-101 since 12 Aug is consistent with resolved).\n5. Optionally investigate the 28 Jul site power event (PW-701 across M01–M06) as a separate reliability item — it did not cause this issue but is worth a look on its own.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": true,
+      "tool_calls": 17,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "search_documents",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 2678,
+      "latency_ms": 32516,
+      "input_tokens": 40071,
+      "output_tokens": 5312
+    },
+    {
+      "id": "q17",
+      "category": "rca",
+      "question": "Is the rise in TL-201 alarms on M05 and M06 also happening on M08, which is the same model?",
+      "answer": "**No — M08 is not showing the same rise.** Even though M08 is the same model (HMC-630) as M05 and M06, its TL-201 trend is flat-to-down, not up.\n\n**TL-201 alarms by month (June → July → August)**\n\n| Machine | Model | Jun | Jul | Aug | Trend |\n|---|---|---|---|---|---|\n| M05 | HMC-630 | 15 | 29 | 42 | rising |\n| M06 | HMC-630 | 11 | 17 | 27 | rising |\n| **M08** | **HMC-630** | **15** | **8** | **8** | **flat / down** |\n\n**Baseline check.** The other machines over the same period: M01 6→11→13, M02 12→7→9, M03 11→18→18, M04 12→13→17, M07 16→11→18. M05 and M06 clearly sit above this background band; M08 (8 in both July and August) sits at the *bottom* of it. So the July→August rise is specific to M05/M06, not a plant-wide or model-wide pattern.\n\n**What's different about M08 — a lead, not a conclusion (confidence: medium).** Tool-change records show M05 and M06 both introduced a new supplier, ToolMax, starting July (batches TM-2607 / TM-2608), while M08 stayed entirely on Kento (KT-2606/07/08) throughout (tool_changes table). This lines up with the onset:\n\n- M05: Kento only in June; adds ToolMax in July (9) and August (18).\n- M06: same pattern (ToolMax 6 in July, 20 in August).\n- M08: Kento only, all three months.\n\nWO-260093 (M05, 2026-07-24) records TL-201 \"frequent,\" inserts reaching the wear limit at \"roughly half the usual life,\" and flags the new ToolMax batch TM-2607. The manual's guidance for this exact situation is to compare against same-model machines still on the previous insert — which is precisely M08. That M08 is unaffected while M05/M06 (which switched suppler) rose is consistent with an insert-quality/supplier effect rather than an HMC-630 design or site issue.\n\n**Caveats:** TL-201 is a low-severity alarm and the monthly counts are small, so treat M08's flat numbers as a useful control, not as proof. Confirm before acting.\n\n**Suggested next steps**\n1. Treat M08 as the control machine for a ToolMax-vs-Kento comparison (tool life per insert).\n2. Pull TL-201 frequency vs. insert batch on M05/M06 to see whether alarms track TM-2607/TM-2608 specifically.\n3. If confirmed, validate a replacement Kento batch on sample parts before any further ToolMax rollout (per the manual's \"Changing insert supplier or grade\" guideline).",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 11,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "lookup_alarm_code",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 1630,
+      "latency_ms": 20718,
+      "input_tokens": 21238,
+      "output_tokens": 3080
+    }
+  ]
+}

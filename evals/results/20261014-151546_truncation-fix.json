@@ -1,0 +1,67 @@
+{
+  "model": "deepseek-v4-flash",
+  "tag": "truncation-fix",
+  "summary": {
+    "overall": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 9.0,
+      "avg_latency_s": 23.6,
+      "tokens": 18882
+    },
+    "unanswerable": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 9.0,
+      "avg_latency_s": 23.6,
+      "tokens": 18882
+    }
+  },
+  "results": [
+    {
+      "id": "q21",
+      "category": "unanswerable",
+      "question": "What is the spindle vibration trend on M02 over the summer?",
+      "answer": "## Direct answer: there is no spindle vibration trend for M02, because vibration is not recorded.\n\nThe schema states explicitly that **vibration/sensor time series are not recorded anywhere in this data**. The only vibration reference in the entire dataset is a one-off qualitative note on a different machine (WO-260029, M05: \"vibration within limits\"), and no numeric vibration readings exist for M02 in any month.\n\nOne structural problem even if it existed: the database window is **2026-06-01 to 2026-08-31 — i.e. the entire summer**. There is no pre-summer or winter data, so a *trend* on M02 cannot be established against its own earlier history under any metric.\n\n## What I can offer as a proxy: spindle-related alarms (SP-101 overheat, SP-102 load high)\n\nLabeled as a **proxy** — neither code measures vibration; they are spindle thermal/load events. Applying the baseline rule:\n\n**M02, summer 2026 (spindle alarms, SP-101 + SP-102):**\n| Month | SP-101 | SP-102 | Total |\n|---|---|---|---|\n| 2026-06 | 1 | 4 | 5 |\n| 2026-07 | 4 | 10 | 14 |\n| 2026-08 | 1 | 5 | 6 |\n\n**Baseline — same model (VMC-850: M01, M02, M04), whole summer:**\n- M02 = 25, M01 = 18, M04 = 17\n- Fleet range: 15 (M08) to 38 (M03, VMC-1100)\n\n**Baseline — other models, July (the month M02 peaks):** M03 = 14, M06 = 9, M01 = 7, M04 = 5, M05 = 3, M07 = 5, M08 = 4.\n\n## Reading it honestly\n- M02's July count (14) is its highest month and the highest in its model group that month, **but M03 also hit 14 in July and 21 in August**, and several machines rose in July. That points to a partly **shared/seasonal effect** (hotter ambient → more spindle overheat/load events), not an M02-specific fault.\n- Over the summer M02 (25) is modestly above its two VMC-850 peers (18, 17) but sits **inside the fleet range (15–38)**. That is normal background variation, not an outlier.\n- Counts are single/double digits per month — too small to call a trend, and I would not recommend action on this alone.\n- The one relevant PM on M02, spindle bearing inspection **WO-260051 (2026-07-02)**, found temperature rise normal, with no vibration issue flagged; the SP-101 event **WO-260063 (2026-07-10)** was resolved by letting the spindle cool and resuming.\n\n**Confidence: high** that vibration trend cannot be answered from this data; **low** in any inferred spindle pattern from alarm counts (proxy only, no pre-summer baseline).\n\n## What would be needed\nA spindle vibration time series (e.g. periodic vibration RMS/velocity readings from the spindle or a spindle-mounted sensor) covering at least several months before and after the summer, keyed by machine. If you can point me to a condition-monitoring export or CMMS sensor table outside this database, I can analyze the trend properly. Failing that, spindle **alarm frequency** is the closest available indicator — and it looks like normal seasonal variation.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 9,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 1280,
+      "latency_ms": 23578,
+      "input_tokens": 16189,
+      "output_tokens": 2693
+    }
+  ]
+}

@@ -1,0 +1,884 @@
+{
+  "model": "deepseek-v4-flash",
+  "tag": "prompt-v2-full",
+  "summary": {
+    "overall": {
+      "n": 22,
+      "correct": 22,
+      "evidence_cited": "3/4",
+      "avg_tool_calls": 5.3,
+      "avg_latency_s": 9.8,
+      "tokens": 262889
+    },
+    "aggregation": {
+      "n": 6,
+      "correct": 6,
+      "evidence_cited": "-",
+      "avg_tool_calls": 2.3,
+      "avg_latency_s": 4.3,
+      "tokens": 31828
+    },
+    "lookup": {
+      "n": 6,
+      "correct": 6,
+      "evidence_cited": "-",
+      "avg_tool_calls": 2.0,
+      "avg_latency_s": 3.5,
+      "tokens": 29201
+    },
+    "rca": {
+      "n": 6,
+      "correct": 6,
+      "evidence_cited": "3/4",
+      "avg_tool_calls": 12.3,
+      "avg_latency_s": 23.0,
+      "tokens": 169602
+    },
+    "unanswerable": {
+      "n": 4,
+      "correct": 4,
+      "evidence_cited": "-",
+      "avg_tool_calls": 4.0,
+      "avg_latency_s": 7.5,
+      "tokens": 32258
+    }
+  },
+  "results": [
+    {
+      "id": "q01",
+      "category": "lookup",
+      "question": "How many alarms did M03 raise in August 2026?",
+      "answer": "M03 raised **70 alarms** in August 2026 (count of `alarms` rows for machine M03 with `ts` in 2026-08).",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_number",
+          "pass": true,
+          "detail": "expected 70"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 11,
+      "latency_ms": 3328,
+      "input_tokens": 4659,
+      "output_tokens": 137
+    },
+    {
+      "id": "q02",
+      "category": "lookup",
+      "question": "Which alarm code was the most frequent across all machines in July 2026?",
+      "answer": "**TL-201** was the most frequent alarm code in July 2026, with **114 events** across all machines — well ahead of the next highest (DR-601, 76 events).\n\nFull ranking for July 2026:\n\n| Alarm code | Events |\n|---|---|\n| TL-201 | 114 |\n| DR-601 | 76 |\n| SP-102 | 37 |\n| AX-402 | 27 |\n| SP-101 | 24 |\n| CL-301 | 19 |\n| CL-302 | 17 |\n| LU-501 | 15 |\n| EM-901 | 14 |\n| TL-202 | 9 |\n| AX-401 | 8 |\n| PW-701 | 6 |\n\n(From `alarms`, filtered to `substr(ts,1,7) = '2026-07'`, grouped by `alarm_code`.)",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_contains",
+          "pass": true,
+          "detail": "expected all of ['TL-201']"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 20,
+      "latency_ms": 4109,
+      "input_tokens": 4778,
+      "output_tokens": 303
+    },
+    {
+      "id": "q03",
+      "category": "lookup",
+      "question": "When was M03's coolant pump filter PM planned in July, and when was it actually done?",
+      "answer": "**M03 coolant pump filter — July PM**\n\n| Plan ID | Planned date | Actually done | Status |\n|---|---|---|---|\n| **PM-0026** | **2026-07-10** | **2026-08-12** | done_late (33 days late) |\n\nDetails:\n- The July instance of the 30-day coolant pump filter PM for M03 was **planned for 2026-07-10** but was **not completed until 2026-08-12** — 33 days after the planned date, which exceeds the 3-day threshold and so is flagged `done_late` (PM-0026).\n- For context, the previous cycle was on schedule: planned 2026-06-10, done 2026-06-10 (PM-0006).\n- The next cycle is scheduled for 2026-09-11, based on the (late) done date as per the interval rule (PM-0056).\n\nSo the slip on PM-0026 pushed the whole 30-day cadence roughly a month later (June 10 → Aug 12 → Sep 11). If it would be useful, I can check M03's alarms and work orders around July–August to see whether the missed filter change coincided with any coolant-related issue.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 3,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 39,
+      "latency_ms": 4421,
+      "input_tokens": 5311,
+      "output_tokens": 489
+    },
+    {
+      "id": "q04",
+      "category": "lookup",
+      "question": "What does alarm code AX-402 mean and what are its common causes?",
+      "answer": "**AX-402 — Axis following error (軸跟隨誤差過大)**\n\n**Meaning:** The difference between the commanded axis position and the actual axis position exceeded the allowed tolerance. Severity is **high**.\n\n**Common causes:**\n- **Encoder signal problem** — damaged cable or a loose connector\n- **Servo tuning** — parameters out of adjustment or drifted from their correct values\n- **Mechanical binding** — axis binding or excessive friction\n\n**Recommended checks:**\n1. Inspect the encoder cable and connector along its **full route** (not just at the ends)\n2. Compare the servo parameters against the backup/baseline settings\n3. Check the axis for binding\n\nNote: this is the reference/manual entry for the code. If you'd like, I can pull the actual AX-402 alarm history for your plant (which machines, how often, what technicians found) to see whether one of these causes is recurring here.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "tools_used": [
+        "lookup_alarm_code"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 11,
+      "latency_ms": 2655,
+      "input_tokens": 2618,
+      "output_tokens": 250
+    },
+    {
+      "id": "q05",
+      "category": "lookup",
+      "question": "Which insert supplier was M05 using at the end of August?",
+      "answer": "M05 was using **ToolMax** inserts at the end of August.\n\nThe last change in the period was TC-0269 on 2026-08-31 21:49:14 (APKT1604 face mill insert, batch TM-2608). In fact every recorded M05 insert change in August was ToolMax / batch TM-2608 — all 18 changes from TC-0169 (08-02) through TC-0269 (08-31) — so there was no supplier switch during that month.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_contains",
+          "pass": true,
+          "detail": "expected all of ['ToolMax']"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 55,
+      "latency_ms": 3344,
+      "input_tokens": 5476,
+      "output_tokens": 253
+    },
+    {
+      "id": "q06",
+      "category": "lookup",
+      "question": "Site B 有幾台機台？",
+      "answer": "Site B 有 **2 台**機台，都在 L3 產線：\n\n| 機台 | 型號 | 產線 | 安裝年份 |\n|---|---|---|---|\n| M07 | VMC-1100 | L3 | 2021 |\n| M08 | HMC-630 | L3 | 2023 |\n\n（其餘 6 台 M01–M06 屬於 Site A 的 L1、L2 產線。）",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_number",
+          "pass": true,
+          "detail": "expected 2"
+        },
+        {
+          "type": "lang_zh",
+          "pass": true,
+          "detail": "expected a Chinese answer"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 29,
+      "latency_ms": 3155,
+      "input_tokens": 4714,
+      "output_tokens": 213
+    },
+    {
+      "id": "q07",
+      "category": "aggregation",
+      "question": "Which machine had the most TL-201 alarms in August 2026?",
+      "answer": "**M05** — it had 42 TL-201 alarms in August 2026, the highest of all eight machines.\n\nFor context, the full August 2026 breakdown by machine (total 152 TL-201 alarms):\n\n| Machine | Count |\n|---|---|\n| M05 | 42 |\n| M06 | 27 |\n| M07 | 18 |\n| M03 | 18 |\n| M04 | 17 |\n| M01 | 13 |\n| M02 | 9 |\n| M08 | 8 |\n\nIf you'd like, I can look into why M05 stands out (onset timing, axis/shift pattern, or recent maintenance and tool changes on that machine).",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_contains",
+          "pass": true,
+          "detail": "expected all of ['M05']"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 52,
+      "latency_ms": 3500,
+      "input_tokens": 4755,
+      "output_tokens": 309
+    },
+    {
+      "id": "q08",
+      "category": "aggregation",
+      "question": "Compare the number of CL-302 alarms on M03 in June vs July 2026.",
+      "answer": "CL-302 alarm counts on M03:\n\n| Month | Count |\n|-------|-------|\n| 2026-06 | 3 |\n| 2026-07 | 13 |\n\nThat's an increase from 3 in June to 13 in July (roughly 4×). Note that 3 events in June is a small base, so the \"4×\" figure is not very stable — but 13 in July is the higher absolute number.\n\nIf you'd like, I can check whether July's 13 is unusual versus a baseline (other machines on the same model, or M03's earlier history) and look at what changed around that time (work orders, PM plans, tool changes). Just say the word.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_number",
+          "pass": true,
+          "detail": "expected 3"
+        },
+        {
+          "type": "sql_number",
+          "pass": true,
+          "detail": "expected 13"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 268,
+      "latency_ms": 5484,
+      "input_tokens": 4808,
+      "output_tokens": 545
+    },
+    {
+      "id": "q09",
+      "category": "aggregation",
+      "question": "How many PM tasks are marked as done late in the PM plan?",
+      "answer": "**5 PM tasks** are marked `done_late` (i.e. completed more than 3 days after the planned date).\n\nFor context, the full PM plan status breakdown is:\n- `done` (on time): 42\n- `done_late`: 5\n- `scheduled` (not yet due/done): 24\n\nTotal: 71 plan entries.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_number",
+          "pass": true,
+          "detail": "expected 5"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 39,
+      "latency_ms": 3312,
+      "input_tokens": 4699,
+      "output_tokens": 210
+    },
+    {
+      "id": "q10",
+      "category": "aggregation",
+      "question": "What percentage of M01's AX-402 alarms were reset by operators?",
+      "answer": "**100%** — all 38 AX-402 alarms on M01 were reset by operators.\n\n- 38 of 38 events have `reset_by = 'operator'` (no auto or technician resets).\n- Period covered: 2026-06-02 17:36:57 through 2026-08-18 00:22:40.\n\nSo there is no mixed breakdown here; operator reset is the only reset mode recorded for this alarm on M01.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_number",
+          "pass": true,
+          "detail": "expected 100.0"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 3,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 146,
+      "latency_ms": 4031,
+      "input_tokens": 4948,
+      "output_tokens": 418
+    },
+    {
+      "id": "q11",
+      "category": "aggregation",
+      "question": "Which machines raised PW-701 on 2026-07-28?",
+      "answer": "On 2026-07-28, **PW-701** was raised by six machines — **M01, M02, M03, M04, M05 and M06** — all in the day shift:\n\n| Machine | Time | Severity | Duration | Reset by |\n|---|---|---|---|---|\n| M04 | 14:05:03 | high | 18.8 min | technician |\n| M06 | 14:05:38 | high | 17.2 min | technician |\n| M05 | 14:05:57 | high | 18.0 min | technician |\n| M01 | 14:06:03 | high | 15.0 min | technician |\n| M02 | 14:06:11 | high | 16.2 min | technician |\n| M03 | 14:06:15 | high | 19.2 min | technician |\n\nM07 and M08 did not raise this code that day.\n\nWorth noting (not asked, but relevant): all six fired within about 70 seconds of each other (~14:05–14:06), which is the classic signature of a shared/common-mode trigger rather than six independent faults. Each needed a technician to reset. If you want, I can pull the alarm definition and check whether other machines or alarm codes clustered at the same timestamp.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_contains",
+          "pass": true,
+          "detail": "expected all of ['M04', 'M06', 'M05', 'M01', 'M02', 'M03']"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 169,
+      "latency_ms": 5170,
+      "input_tokens": 5060,
+      "output_tokens": 567
+    },
+    {
+      "id": "q12",
+      "category": "aggregation",
+      "question": "What was the average duration in minutes of SP-101 alarms on M03 in July 2026?",
+      "answer": "**Average duration: 25.9 minutes** for SP-101 alarms on M03 in July 2026.\n\nDetails: 7 events, ranging from 15.2 to 44.1 minutes (min–max). Note this is a small sample (7 events), so the average is directional rather than a stable figure — if you need a more robust number, I can widen the window (e.g., June–August) or compare against M03's SP-101 durations in the surrounding months.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "sql_number",
+          "pass": true,
+          "detail": "expected 25.9"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 3,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "lookup_alarm_code",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 120,
+      "latency_ms": 4312,
+      "input_tokens": 5118,
+      "output_tokens": 391
+    },
+    {
+      "id": "q13",
+      "category": "rca",
+      "question": "Why did M03 keep throwing spindle overheat alarms from late July to early August?",
+      "answer": "## Summary\n\nM03 (VMC‑1100, Site A/L1) did **not** have a spindle fault — it had a **coolant fault**. SP‑101 spindle‑overheat alarms from late July to early August track a **clogged coolant pump suction filter whose 30‑day PM was deferred ~5 weeks**. After the filter was replaced on 2026‑08‑12, SP‑101 stopped entirely.\n\n## Evidence\n\n**1. Real, M03‑specific burst.**\n- M03 SP‑101: **June 0 → July 7 → August 12** (19 total, 2026‑07‑08 to 2026‑08‑11); dense cluster 07‑26 → 08‑11 (peaks 2 on 07‑31, 4 on 08‑06).\n- Baseline, same model: only peer **M07 logged 5** (3 Jul + 2 Aug). M03's 19 is well outside this; its own June was 0. Genuine anomaly, not background variation.\n- 18 of 19 events reset `auto` after 15–44 min cooldown — thermal limit trips, not a hard fault.\n\n**2. Coolant failure rose in parallel.**\n- M03 CL‑302 (coolant pressure low): **June 3 → July 13 → August 16**. Both families climb together.\n- Manual: SP‑101 cause #1 = *\"insufficient coolant flow to spindle cooling jacket\"*; CL‑302 = *\"clogged pump suction filter\"* — same subsystem.\n\n**3. The preventing PM was deferred.**\n- **PM‑0026** (coolant pump filter, 30‑day) planned **2026‑07‑10**, done **2026‑08‑12**, status `done_late` (~33 days overdue). Previous PM‑0006 done on time 06‑10.\n- **WO‑260064 (07‑10):** *\"Coolant pump filter PM deferred – rush order (Q3 housing batch), line cannot stop.\"*\n- **WO‑260092 (07‑24):** *\"Coolant filter PM still pending… CL‑302 a few times/day, monitoring.\"* — warning signs already seen.\n- **WO‑260141 (08‑12):** *\"PM done late (planned 7/10, deferred). Filter was severely clogged.\"*\n\n**4. The fix confirms the cause.**\n- **WO‑260140 (08‑12):** *\"Repeated SP‑101 + CL‑302. Suction filter heavily clogged with chips and sludge. Replaced filter, flushed tank. Coolant pressure back to 4.3 bar (was ~2.1).\"*\n- **Zero SP‑101 on M03 after 08‑12** (last 08‑11 21:54).\n\n**5. Contributors checked and ruled out / minor.** Spindle‑bearing PM (PM‑0001) was on schedule (done 06‑03, next 09‑01). Tool changes were steady all summer on one supplier/batch family (TC‑…, Kento KT‑2607→KT‑2608), so no tooling trigger. Two tech notes cite \"主軸負載高，粗加工進給調降\" (high spindle load, roughing feed reduced — WO‑260090, WO‑260124); these are consistent with a starved cooling jacket under load, not an independent cause.\n\n## Likely cause (confidence: high)\n\nChoked coolant pump suction filter → coolant pressure fell to ~2.1 bar (below the 3.0 bar threshold) → insufficient flow to the spindle cooling jacket → spindle housing overheated → SP‑101. Root trigger was the **deferral of PM‑0026 from 07‑10 to 08‑12** for a rush Q3 housing order. Not bearing wear or lubrication failure — it resolved on the filter change alone.\n\n## Recommended next steps\n\n1. **Treat coolant pump filter PM as line‑critical, not deferrable.** Add a hard rule: no postponement of PM‑0026‑class tasks beyond interval without a pressure check first.\n2. **Add a coolant‑pressure interlock/warning at ~2.8 bar** (just below the 3.0 trip) so drift is caught before SP‑101 trips.\n3. **Add SP‑101 + CL‑302 correlation to the alarm dashboard** — co‑occurrence should auto‑raise a coolant inspection.\n4. **Verify the fix holds:** confirm no SP‑101 recurrence through September against the 08‑12 WO‑260140 baseline (4.3 bar).\n5. **Apply the lesson to peers:** check filter PM status on other VMC/HMC machines (esp. M07, same model) for similar deferrals.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": false,
+      "tool_calls": 15,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "search_documents",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "lookup_alarm_code"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "length",
+        "stop"
+      ],
+      "reasoning_tokens": 2299,
+      "latency_ms": 31484,
+      "input_tokens": 34443,
+      "output_tokens": 5247
+    },
+    {
+      "id": "q14",
+      "category": "rca",
+      "question": "TL-201 tool wear alarms went up on M05 and M06 from late July. What changed?",
+      "answer": "## Summary\nThe late-July TL-201 rise on M05 and M06 is an **insert supplier switch: Kento → ToolMax**. M05's first ToolMax insert went in **2026-07-20**, M06's on **2026-07-23** — the alarm rate rises from exactly those dates. These are the **only two machines in the plant that switched supplier**; all others (including M08, the third HMC-630) stayed on Kento and did not rise.\n\n## Evidence\n\n**Alarms per month (TL-201):**\n\n| Machine | Jun | Jul | Aug |\n|---|---|---|---|\n| M05 | 15 | 29 | 42 |\n| M06 | 11 | 17 | 27 |\n| M08 (same model) | 15 | 8 | 8 |\n\nWeekly, M05 went from 3–5/week (weeks 22–28) to 9–15/week (weeks 29–33); M06 same shape. Both shifts affected (M05 day 35 / night 24 since Jul 20) → not shift-specific.\n\n**What changed (tool_changes):**\n- M05: Kento through 07-17, first ToolMax batch **TM-2607 on 2026-07-20 15:04**; TM-2608 from Aug.\n- M06: Kento through 07-19, first ToolMax **TM-2607 on 2026-07-23 10:45**.\n- M01, M02, M03, M04, M07, M08: 100% Kento throughout.\n\n**Tool consumption roughly doubled under ToolMax:** M05 10 changes in Jun → 18 in Aug; M06 9 → 20. M08 flat at 8–9/month.\n\n**Technician notes:** WO-260093 (M05, 07-24) — *\"TL-201 frequent. Inserts reaching wear limit at roughly half the usual life. New ToolMax batch TM-2607?\"* Breakage followed: WO-260083 (M06, 07-21), WO-260129 (M05, 08-06, \"chipping again\"), WO-260164 (M05, 08-23).\n\n**Manual:** *cutting tools / changing insert supplier or grade* — suppliers/grades differ in wear resistance; validate before rollout and compare against same-model machines still on the old insert.\n\n**Ruled out:** Coolant/way-lube PMs were done on/近 schedule for M05 (07-22, 07-25) and M06 (07-27) — no missed PM at onset. M08 unaffected → not model- or line-wide.\n\n## Likely cause\n**ToolMax TM-2607 inserts wear out at roughly half the life of Kento.** Confidence: **high** for the supplier switch as the driver (exact date match, only two switched machines affected, same-model control M08 unaffected, technician note naming the batch). **Low/medium** on *why* (grade/quality vs. tool-life counter setting) — the data can't distinguish.\n\n## Recommended next steps\n1. Quarantine/stop issuing **TM-2607**; revert M05/M06 to Kento and confirm TL-201 rate returns to the 8–15/month baseline.\n2. Validate **TM-2608** separately before use — Aug data already shows elevated counts (M05 42, M06 27) on that batch.\n3. Inspect/measure a worn TM-2607 edge vs. a Kento insert (flank wear, chipping) and record the batch — per manual.\n4. Confirm no cutting-parameter or tool-life-setpoint change was made alongside the supplier change (parameters are not recorded in this data; raise with the process engineer).\n\n**Caveat:** Alarm counts are the only wear proxy recorded — no tool-life or production-count data exists here, so the \"half life\" figure rests on the WO-260093 note and the tool-change counts, not a direct measurement.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": true,
+      "tool_calls": 16,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "lookup_alarm_code",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "search_documents",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "length",
+        "stop"
+      ],
+      "reasoning_tokens": 2041,
+      "latency_ms": 30436,
+      "input_tokens": 35461,
+      "output_tokens": 4708
+    },
+    {
+      "id": "q15",
+      "category": "rca",
+      "question": "M01 最近一直出現 X 軸跟隨誤差，根本原因找到了嗎？",
+      "answer": "## Summary\n\n找到了。M01 的 X 軸跟隨誤差（AX-402）根本原因是 **X 軸編碼器電纜（encoder cable）外皮磨破**——電纜在與排屑機外殼（chip conveyor housing）摩擦處磨穿，造成間歇性訊號異常。已於 2026-08-19 更換電纜並加裝護套、重新走線，之後未再復發。信心：**高**。\n\n## Evidence\n\n**異常型態（起始時間、頻率、軸別）**\n- M01 的 AX-402 全部 38 次中，**X 軸佔 35 次**，且**全部集中在 2026-07-01 至 2026-08-18**（7 月 21 次、8 月 14 次）。\n- 7 月之前，M01 的 AX-402 只有 6 月的 Y 軸 2 次、Z 軸 1 次，**X 軸 0 次**——是明顯的起點（onset）。\n\n**對照基準（同型機 VMC-850）**\n- 同型機 M02 X 軸 0 次（僅 Y 軸 1 次）、M04 X 軸 0 次（僅 Z 軸 1 次）。\n- 其他機台整個期間 X 軸都只有個位數零星次數（M06 3 次、M07 2 次、M08 1 次）。\n- 所以 M01 的 35 次 X 軸事件是**單機、單軸的異常集中**，不是全廠普遍現象（排除共模因素如電力／廠務）。\n\n**處理歷程**\n- 初期都只做復歸：WO-260054（7/03）、WO-260073（7/15）、WO-260108（7/29「持續觀察」）。\n- WO-260133（8/08）已比對伺服參數 vs 備份（無變化）、檢查 gib／滑軌（無卡滯），排除伺服調校與機械卡滯。\n- **根本原因紀錄：WO-260155（2026-08-19）**——「X-axis encoder cable jacket worn through where it rubs against chip conveyor housing (intermittent signal). Replaced encoder cable, added cable guard and re-routed. Test run 2h OK.」\n\n**手冊佐證**\n- 手冊（MAN:axis_drive）明確指出：「Intermittent following errors that clear on reset often indicate an encoder signal problem: a damaged cable, a loose connector, or a cable routed near moving parts such as the chip conveyor or way covers.」——與實際找到的原因完全一致。\n\n**修復後驗證**\n- 8/19 修復後至資料結束（2026-08-31）**無任何 AX-402 復發**（查詢回傳 0 筆），約 12 天乾淨運轉。\n\n## Likely cause（信心：高）\nX 軸編碼器電纜因走線與排屑機外殼摩擦而磨穿外皮，產生間歇性位置回授訊號異常，造成間歇性跟隨誤差。屬**漸進式磨損**，資料中沒有與 7/1 起點對應的 PM、更換軸驅動或刀具變更（7 月僅有 Kento 刀片例行更換，與軸無關），因此判定為累積磨耗而非單一事件觸發。\n\n## Recommended next steps\n1. **持續觀察**：確認 8/19 後續（含即將到來的月份）M01 無復發；目前 12 天無事件是初步但正向的驗證。\n2. **橫向檢查同型機**：M01/M02/M04 皆為 VMC-850，建議檢查 M02、M04 及同線機台的編碼器電纜走線是否同樣靠近排屑機／伸縮護罩，預防同款摩擦磨損（此為共通設計風險）。\n3. **納入 PM 檢查項目**：在 way lube／軸驅動相關 PM 中加入「編碼器電纜外觀與走線」目視檢查，避免再度演變成 35 次的高頻警報。\n\n註：資料中沒有產能或停機成本欄位，因此無法量化這 35 次警報造成的產出損失。",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        },
+        {
+          "type": "lang_zh",
+          "pass": true,
+          "detail": "expected a Chinese answer"
+        }
+      ],
+      "evidence_cited": true,
+      "tool_calls": 14,
+      "tool_errors": 1,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "lookup_alarm_code"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 1119,
+      "latency_ms": 23250,
+      "input_tokens": 29135,
+      "output_tokens": 3118
+    },
+    {
+      "id": "q16",
+      "category": "rca",
+      "question": "On the afternoon of July 28 many machines alarmed at the same time. Was it a machine problem?",
+      "answer": "## Summary\nNo — this looks like a **supply-side (power) event, not a machine fault**. Six of the eight machines (all Site A machines, M01–M06) raised high-severity alarm **PW-701 \"Supply voltage fluctuation\" within 72 seconds of each other at 14:05–14:06 on 2026-07-28**. Alarms that fire simultaneously across different models and different lines point to something shared upstream of the machines.\n\n## Evidence\n**1. The cluster is tight and spans all of Site A** (query on `alarms`, 2026-07-28):\n\n| Time | Machine | Model | Line | Code |\n|---|---|---|---|---|\n| 14:05:03 | M04 | VMC-850 | L2 | PW-701 |\n| 14:05:38 | M06 | HMC-630 | L2 | PW-701 |\n| 14:05:57 | M05 | HMC-630 | L2 | PW-701 |\n| 14:06:03 | M01 | VMC-850 | L1 | PW-701 |\n| 14:06:11 | M02 | VMC-850 | L1 | PW-701 |\n| 14:06:15 | M03 | VMC-1100 | L1 | PW-701 |\n\nSix machines, three different models, both Site A lines, spread over ~1 minute. Site B machines (M07, M08 on L3) did **not** alarm at that time.\n\n**2. PW-701 is rare — this is not normal background.** Across the whole 2026-06-01 → 2026-08-31 dataset there are only **8 PW-701 events total**: one isolated event on M08 at 22:53 on 2026-06-17 (single machine, overnight — different situation), the six-machine cluster on 07-28, and one on M03 on 2026-08-31. So a 6-machine simultaneous hit is clearly distinguishable from routine daily alarm noise (the plant normally logs ~9–22 alarms/day across 4–8 machines — 07-28's daily total of 22 is within that normal range; it's the *simultaneity within one minute* that is the anomaly).\n\n**3. The manual and the work order agree.** The power-quality guide states: *\"When several machines raise PW-701 within minutes of each other, the cause is almost always on the supply side (utility grid or site distribution), not in the machine\"* (`MAN:power_quality#supply-voltage-fluctuation-pw-701`). Alarm reference PW-701 lists likely causes as utility grid disturbance / site distribution issue / loose main terminal, and recommends checking other machines and facilities records before touching the machine.\n\n**4. Facilities confirmed external cause.** WO-260106 (M02, NOTE, power, technician Chen, 2026-07-28 14:40): *\"Power dip ~14:05. All Site A machines (L1+L2) alarmed PW-701 together. Facilities: utility grid voltage sag, 廠務確認為外部電網問題. Restarted, re-homed axes, no damage found.\"*\n\n**5. The later alarms that afternoon were knock-on effects.** AX-401 servo overload on M02 (14:22, Z axis) and M05 (14:24, B axis) came ~16–18 minutes after the dip. WO-260107 (M05) closes it as *\"AX-401 after power dip restart, re-homed B axis, OK.\"* The manual notes restarting after a power loss without re-homing can trigger AX-401. CL-302, DR-601 and TL-201 entries later in the day are routine low/medium alarms at normal frequency.\n\n## Likely cause (confidence: high)\nA **utility grid voltage sag affecting the Site A supply** at ~14:05 on 2026-07-28 briefly dropped supply voltage on all Site A machines at once, disabling the drives and raising PW-701 on all six. Site B was unaffected, which argues for Site A distribution/feed rather than a whole-plant or single-machine problem. This is a facilities/electrical issue, not a CNC machine fault.\n\nCaveat: there is no energy/power-quality time-series data in this database, so the grid sag itself is evidenced by the work-order note and the alarm pattern, not by a measured voltage record.\n\n## Recommended next steps\n1. **Don't troubleshoot the individual machines** — nothing here suggests a machine defect. WO-260106 already records no damage found after restart and re-homing.\n2. **Request facilities' power-quality log for 2026-07-28 ~14:05** (Site A feed / incoming voltage recorder) to confirm duration and depth of the sag; check whether a capacitor bank, transfer switch, or large load switching upstream caused it.\n3. **Verify re-homing was completed on every Site A machine** before restart — the AX-401s that followed were restart-related (WO-260107). Log this as one common-cause event rather than six separate machine failures, so it doesn't skew per-machine reliability stats.\n4. **Watch two open items separately, not as part of this event:** WO-260108 (M01, 2026-07-29) reports X-axis following error recurring after reset — flag for follow-up. WO-260109 (M06, 2026-07-29) reports insert edge chipping after ~40 parts vs ~90 previously, which is a tooling/supplier question, not power-related. Both are single events so far — not yet trends.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": true,
+      "tool_calls": 9,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "lookup_alarm_code",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 785,
+      "latency_ms": 17829,
+      "input_tokens": 16277,
+      "output_tokens": 2555
+    },
+    {
+      "id": "q17",
+      "category": "rca",
+      "question": "Is the rise in TL-201 alarms on M05 and M06 also happening on M08, which is the same model?",
+      "answer": "**Short answer: No.** M08 does not show the rise — its TL-201 count is flat/declining, even though it is the same HMC-630 model. This is exactly the baseline comparison that isolates the cause.\n\n## Evidence\n\n| Machine | Model | Line | TL-201 Jun | Jul | Aug |\n|---|---|---|---|---|---|\n| M05 | HMC-630 | L2 | 15 | 29 | 42 |\n| M06 | HMC-630 | L2 | 11 | 17 | 27 |\n| **M08** | **HMC-630** | **L3 (Site B)** | **15** | **8** | **8** |\n\nSame model confirmed: M05, M06 and M08 are all HMC-630 (M08 installed 2023, on L3/Site B).\n\nTooling context that separates the two sites:\n- **M05 / M06 (L2):** insert supplier switched Kento → ToolMax. July shows a mix (KT-2607 + TM-2607), August is 100% ToolMax (TM-2608). Tool changes also climbed (M05: 10→15→18; M06: 9→13→20).\n- **M08 (L3):** stayed on **Kento** every month (KT-2606 / KT-2607 / KT-2608), and tool changes held steady (9→9→8).\n- WO‑260079 (2026‑07‑19, NOTE): \"APKT1604 face mill inserts switched from Kento to ToolMax from 7/20 (cost-down). Applies to L2 HMC machines.\"\n- WO‑260093 (2026‑07‑24, CM, M05): \"TL‑201 frequent. Inserts reaching wear limit at roughly half the usual life. New ToolMax batch TM‑2607?\"\n- Manual (Chipping/insert guidelines): \"When wear alarms rise after a change, compare against machines of the same model still using the previous insert.\"\n\n## Likely cause (confidence: high)\n\nThe TL-201 rise is **local to the L2 HMC machines (M05/M06)**, not a model-wide HMC-630 problem. The changeover to the ToolMax insert batch on L2 (WO‑260079) coincides with the onset in July, and M08 — the same model still running Kento inserts — shows no rise. This matches the \"insert grade/quality change\" cause in the TL-201 reference.\n\n## Recommended next steps\n\n1. Use **M08 as the control**: compare tool-life-per-insert (alarms or changes per insert) on M05/M06 vs M08 over the same months to quantify the ToolMax life penalty.\n2. Validate the ToolMax batch before wider rollout — the manual advises validating a new insert on sample parts; TM-2608 is now the sole source on L2.\n3. Check cutting parameters and coolant on M05/M06 to rule out an aggravating factor, but the supplier change is the leading hypothesis.\n\nNote: these are alarm **counts** (a proxy for tool life); the plant data has no direct tool-life or production-count metric, so \"life at ~half\" from WO‑260093 is a technician's observation, not a recorded measurement.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 8,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "lookup_alarm_code",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 1161,
+      "latency_ms": 15420,
+      "input_tokens": 14529,
+      "output_tokens": 2365
+    },
+    {
+      "id": "q18",
+      "category": "rca",
+      "question": "After the coolant work on M03 on August 12, did the spindle overheat alarms go back to normal?",
+      "answer": "## Summary\nYes. The M03 spindle **overheat alarms (SP-101) stopped after the August 12 coolant repair**. The last SP-101 on M03 fired on **2026-08-11**, and there were **zero** SP-101 events from 2026-08-12 through the end of the data (2026-08-31) — roughly 19 days clean. Confidence: **high** for the overheat alarm specifically.\n\n## Evidence\n**The repair (root cause was found and fixed):**\n- **WO-260140** (2026-08-12): *\"Repeated SP-101 + CL-302. Opened coolant pump: suction filter heavily clogged with chips and sludge (濾網嚴重堵塞). Replaced filter, flushed tank. Coolant pressure back to 4.3 bar (was ~2.1).\"* — pressure restored from ~2.1 → 4.3 bar.\n- The manual for **SP-101** lists \"insufficient coolant flow to spindle cooling jacket\" as the leading cause, and the coolant guide states a clogged suction filter is the most common cause of low coolant pressure (CL-302), which then raises spindle temperature. This matches exactly what the technician found.\n- **WO-260141** (same day): the coolant-pump-filter PM had been **done late** (planned 7/10, deferred). So the filter was overdue — a plausible contributor.\n\n**Alarm counts on M03, before vs. on/after Aug 12:**\n\n| Code | Before Aug 12 | On/after Aug 12 |\n|---|---|---|\n| SP-101 (overheat) | 19 | **0** |\n| CL-302 (coolant press low) | 31 | 1 (Aug 27) |\n| SP-102 (spindle load high) | 15 | 4 |\n\n- In the run-up, SP-101 was firing almost daily: Jul 8, 13, 26, 29, 30, 31(×2), Aug 1, 2, 3, 5, 6(×4), 7, 8, 10, 11. That pattern stops abruptly at the repair.\n- **Baseline check:** the other VMC-1100, M07, only had 2 SP-101 in August, so M03's pre-repair cluster was genuinely abnormal, not normal variation.\n\n## Caveats (what did *not* go to normal)\n- **SP-102 (spindle load high)** is a *different* alarm — mechanical load >120% of rated, causes being cutting parameters / dull or chipped tool / offset — not coolant. It **still occurs** after the repair (4 events: Aug 15, 16, 22, 29), with **WO-260162** (Aug 22) reducing roughing feed 10%. So load-related events have not changed; only the temperature/overheat failure mode was fixed.\n- **One CL-302** on Aug 27 is a single event — too small to call a pattern, but worth an eye.\n- **DR-601** also continues (6 events after Aug 12) — not addressed by this repair.\n- Data ends 2026-08-31, so this is ~3 weeks of follow-up; solid but not long-term proof.\n\n## Recommended next steps\n1. Keep SP-101 under observation for another 4–6 weeks to confirm it stays at zero (\"normal\" for M03 should now look like M07's ~0–2/month, not the pre-repair cluster).\n2. Treat **SP-102 / high spindle load** as a separate issue — review cutting parameters and tool condition on the roughing passes (WO-260162), independent of the coolant fix.\n3. Keep the **coolant-pump-filter PM on schedule** — the late PM (planned 7/10) likely let the filter clog. Given the chip/sludge load, consider a shorter interval for this machine.\n4. Verify coolant pressure is still holding near the post-repair 4.3 bar at the next service, and watch the single CL-302 (Aug 27).",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 12,
+      "tool_errors": 1,
+      "tools_used": [
+        "get_schema",
+        "lookup_alarm_code",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "lookup_alarm_code",
+        "lookup_alarm_code",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 1463,
+      "latency_ms": 19672,
+      "input_tokens": 18611,
+      "output_tokens": 3153
+    },
+    {
+      "id": "q19",
+      "category": "unanswerable",
+      "question": "M03 七月的耗電量是多少？",
+      "answer": "M03 在七月的耗電量無法回答——**這個資料庫沒有記錄能耗資料**。schema 明確列出「Not recorded anywhere in this data: energy consumption, vibration/sensor time series, production counts」等項目。\n\n資料庫涵蓋的範圍是 2026-06-01 至 2026-08-31，內容為：\n- 警報事件（alarms）\n- 維修工單（work_orders，含 PM / CM / NOTE）\n- 預防保養計畫（pm_plan）\n- 刀具更換紀錄（tool_changes）\n- 機台基本資料（machines）與警報代碼參照表（alarm_codes）\n\n若要評估 M03 七月的用電或能耗狀況，需要的是外部資料，例如：\n- 機台電表／電力監控系統（kWh 逐時或逐日讀值）\n- 或是機台的運轉時數／主軸負載歷時資料\n\n如果你想要的是「用電相關的間接指標」，我可以改用這個資料庫裡有的東西當作**代理指標（proxy）**，例如 M03 七月的警報次數與停機時數、或刀具更換次數。但請注意這只是代理，不能直接換算成耗電量。要我查其中哪一項嗎？",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        },
+        {
+          "type": "lang_zh",
+          "pass": true,
+          "detail": "expected a Chinese answer"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 45,
+      "latency_ms": 3687,
+      "input_tokens": 2900,
+      "output_tokens": 357
+    },
+    {
+      "id": "q20",
+      "category": "unanswerable",
+      "question": "Why is M09 alarming so often?",
+      "answer": "**There is no machine M09 — the plant database contains only M01–M08.**\n\n- `machines` lists exactly 8 machines: M01–M08 across Site A (L1, L2) and Site B (L3).\n- `alarms` has zero records for `machine_id = 'M09'` (confirmed by a direct query).\n\nSo I can't explain M09's alarm rate — that machine simply doesn't exist in this data (2026-06-01 to 2026-08-31). This is likely a typo or an out-of-scope asset.\n\nFor reference, if you meant a different machine, here are the total alarm counts per machine over the period, with the two highest highlighted:\n\n| Machine | Model | Alarms |\n|---|---|---|\n| M03 | VMC-1100 | 172 |\n| M05 | HMC-630 | 172 |\n| M06 | HMC-630 | 134 |\n| M01 | VMC-850 | 130 |\n| M04 | VMC-850 | 120 |\n| M07 | VMC-1100 | 114 |\n| M02 | VMC-850 | 109 |\n| M08 | HMC-630 | 83 |\n\nIf you tell me which machine you actually meant (e.g. M05, a HMC-630 on Site A/L2), I'll run the full root-cause breakdown — alarm codes, timing, shifts/axis, and comparison against same-model baselines and recent work orders.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 5,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 182,
+      "latency_ms": 6639,
+      "input_tokens": 7481,
+      "output_tokens": 783
+    },
+    {
+      "id": "q21",
+      "category": "unanswerable",
+      "question": "What is the spindle vibration trend on M02 over the summer?",
+      "answer": "## Summary\n\n**There is no spindle vibration trend to report — spindle vibration is not recorded anywhere in this database.** The schema lists vibration/sensor time series explicitly under \"Not recorded anywhere in this data,\" alongside energy consumption and production counts. So I cannot give you a vibration trend for M02 (or any machine) over the summer, and any number I quoted as \"vibration\" would be invented.\n\n## What does exist (a proxy — label it as such)\n\nThe closest available signal is **spindle-related alarm counts**, which can be triggered by spindle problems. Two codes exist: `SP-101` (Spindle overheat, high severity) and `SP-102` (Spindle load high, medium severity).\n\nM02 spindle alarms, summer 2026:\n\n| Month | SP-101 | SP-102 | Total |\n|---|---|---|---|\n| 2026-06 | 1 | 4 | 5 |\n| 2026-07 | 4 | 10 | 14 |\n| 2026-08 | 1 | 5 | 6 |\n\n## Baseline comparison (per the baseline rule)\n\nM02 is a **VMC-850**. Same-model machines are M01 and M04.\n\n| Machine (model) | Jun | Jul | Aug |\n|---|---|---|---|\n| **M02 (VMC-850)** | 5 | **14** | 6 |\n| M01 (VMC-850) | 8 | 7 | 3 |\n| M04 (VMC-850) | 3 | 5 | 9 |\n\nAgainst this baseline, M02's July count (14) is the highest of the three VMC-850s for that month, but M02 returns to 6 in August while M04 climbs to 9 — the machines cross over rather than one running consistently hot. The counts are also small (single-to-low-double digits per month).\n\n## Likely cause / conclusion\n\n**Confidence: low.** An alarm count is a weak, indirect proxy for vibration, and at these magnitudes it is within normal month-to-month variation across the same-model baseline. I would **not** call this a rising spindle-vibration trend, and I would not recommend action on it alone. The notable outlier in the fleet is actually **M03 (VMC-1100)**, which rises to 12 `SP-101` + 9 `SP-102` in August — if you're chasing a spindle degradation story, that machine is the better candidate, and I'd flag it for a separate look.\n\n## What would be needed to actually answer your question\n\n- A **vibration sensor / spindle-monitoring time series** (RMS or peak vibration by timestamp) — not present in this database.\n- Ideally a spindle-load or spindle-temperature signal, also not present.\n- If you have that data in a separate condition-monitoring system, share it and I can compare onset timing against the maintenance/tool-change records I do have here.\n\nIf you'd like, I can instead pull M02's spindle-alarm timing by shift, or check its PM/work-order history and tool changes for the July window, as circumstantial evidence.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 5,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 444,
+      "latency_ms": 11000,
+      "input_tokens": 8475,
+      "output_tokens": 1462
+    },
+    {
+      "id": "q22",
+      "category": "unanswerable",
+      "question": "Which operator caused the emergency stops on M04?",
+      "answer": "**This cannot be answered from the data — operator identity is not recorded anywhere in the plant database.**\n\nThe schema (machines / alarms / work_orders / pm_plan / tool_changes) explicitly lists \"operator identity for alarms\" under *Not recorded*. The `alarms` table has a `reset_by` field, but it only holds a **role** (`auto` / `operator` / `technician`), never a name.\n\nWhat *is* recorded for M04's emergency stops — 8 events, all code **EM-901 Emergency stop**, all reset_by `operator`:\n\n| Alarm | Timestamp | Shift | Duration (min) |\n|---|---|---|---|\n| A00044 | 2026-06-05 23:53 | night | 2.2 |\n| A00064 | 2026-06-08 06:00 | night | 4.2 |\n| A00230 | 2026-06-26 05:54 | night | 3.1 |\n| A00305 | 2026-07-04 04:32 | night | 4.7 |\n| A00518 | 2026-07-22 20:40 | night | 1.7 |\n| A00727 | 2026-08-06 07:05 | night | 5.0 |\n| A00810 | 2026-08-12 18:00 | day | 4.9 |\n| A00960 | 2026-08-25 07:49 | night | 4.0 |\n\nTwo caveats on how you read this:\n\n- `reset_by = operator` means the alarm was **cleared** by an operator, not that an operator **caused** it. The manual entry for EM-901 (MAN:alarm_codes#em-901) lists \"Operator action\" as the likely cause and recommends \"confirm reason with operator\" — i.e. the cause is established verbally at the time, not stored.\n- No work order for M04 mentions an EM-901 event or names anyone for it; the technician names in M04's work orders (Huang, Wang, Lin, Liu) are maintenance staff on coolant/spindle jobs (WO-260024, -260049, -260052, -260068, -260072, -260085, -260086), not the person at the console.\n\nIf you need attribution, the data would have to include an operator/ badge ID on alarm events (or an operator log tied to machine and time window) — that field does not exist here. The closest available proxy is shift (7 of 8 events fell on the night shift), which is a pattern about timing, not about a person.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 5,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "truncated": false,
+      "finish_reasons": [
+        "tool_calls",
+        "tool_calls",
+        "tool_calls",
+        "stop"
+      ],
+      "reasoning_tokens": 299,
+      "latency_ms": 8797,
+      "input_tokens": 9488,
+      "output_tokens": 1312
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "model": "deepseek-v4-flash",
+  "tag": "fragile",
+  "summary": {
+    "overall": {
+      "n": 5,
+      "correct": 5,
+      "evidence_cited": "-",
+      "avg_tool_calls": 5.0,
+      "avg_latency_s": 9.7,
+      "tokens": 57854
+    },
+    "rca": {
+      "n": 1,
+      "correct": 1,
+      "evidence_cited": "-",
+      "avg_tool_calls": 8.0,
+      "avg_latency_s": 16.0,
+      "tokens": 17075
+    },
+    "unanswerable": {
+      "n": 4,
+      "correct": 4,
+      "evidence_cited": "-",
+      "avg_tool_calls": 4.2,
+      "avg_latency_s": 8.2,
+      "tokens": 40779
+    }
+  },
+  "results": [
+    {
+      "id": "q17",
+      "category": "rca",
+      "question": "Is the rise in TL-201 alarms on M05 and M06 also happening on M08, which is the same model?",
+      "answer": "## Summary\n\nNo. The TL-201 rise on M05 and M06 is **not** happening on M08, even though all three are the same model (HMC-630, per `machines`). M08's TL-201 count is flat and even fell, while M05/M06 climb month over month.\n\n## Evidence\n\n**TL-201 alarms per month (all HMC-630 machines):**\n\n| Machine | Site / Line | Jun | Jul | Aug |\n|---|---|---|---|---|\n| M05 | A / L2 | 15 | 29 | 42 |\n| M06 | A / L2 | 11 | 17 | 27 |\n| **M08** | **B / L3** | **15** | **8** | **8** |\n\nM05 and M06 rise sharply; M08 dropped after June and stayed flat. (Other models on site — M03, M04, M07 — show only mild variation, so this isn't a site-wide TL-201 trend either.)\n\n**What differs between them — the insert supplier:**\n- WO-260079 (2026-07-19, NOTE): \"Purchasing notice: APKT1604 face mill inserts switched from Kento to ToolMax from 7/20 (cost-down). **Applies to L2 HMC machines.**\" L2 = M05, M06.\n- `tool_changes` confirms M05/M06 moved to ToolMax batches (TM-2607 in Jul, TM-2608 in Aug), while **M08 stayed on Kento throughout** (KT-2606 → KT-2607 → KT-2608).\n- WO-260093 (2026-07-24, M05): \"TL-201 frequent. Inserts reaching wear limit at roughly **half the usual life**. New ToolMax batch TM-2607?\"\n- The manual (`changing-insert-supplier-or-grade`) advises: when wear alarms rise after a change, \"compare against machines of the same model still using the previous insert\" — M08 is exactly that control.\n\n## Likely cause (confidence: high for the comparison, medium-high for the driver)\n\nThe rise is tied to the **Kento → ToolMax insert switch that was rolled out only to the L2 HMC machines (M05, M06)**. M08 is the same model but on Site B/L3 and kept the Kento inserts, so it did not experience the rise — a clean same-model, same-period control that points at the insert batch/supplier rather than the machine model. The onset (July) lines up with the 7/20 supplier change, and the manual lists \"insert grade or quality change\" as a known TL-201 cause.\n\nCaveat: this is a correlation on a small number of machines; M08 runs on a different site/line, so I can't rule out a site-level factor entirely. No energy, vibration, or production-count data exists to test that further.\n\n## Recommended next steps\n\n1. Treat M08 as the baseline: compare M05/M06 tool-life against M08's Kento-fed tool life over Jun–Aug to quantify the loss (technician already estimated ~half life, WO-260093).\n2. Validate the ToolMax batch TM-2607/TM-2608 — inspect for edge chipping (WO-260129 reports chipping/breakage on M05) and confirm grade/hardness specs against Kento.\n3. Since the change was cost-driven and scoped to L2, either re-validate ToolMax on sample parts before wider rollout (`changing-insert-supplier-or-grade`) or revert M05/M06 to Kento pending a batch-quality reply from ToolMax.\n4. Watch M05 for progression to TL-202 breakage, which the manual notes often follows chipping.",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "keywords",
+          "pass": true,
+          "detail": "ok"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 8,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "lookup_alarm_code",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 15953,
+      "input_tokens": 14648,
+      "output_tokens": 2427
+    },
+    {
+      "id": "q19",
+      "category": "unanswerable",
+      "question": "M03 七月的耗電量是多少？",
+      "answer": "M03 七月（以及任何月份）的耗電量 **無法從現有資料回答**。\n\n資料庫中明確沒有記錄能源／耗電量 —— 8 張資料表中（machines、alarms、work_orders、pm_plan、tool_changes、alarm_codes）都沒有電力量測欄位，schema 也直接註明「Not recorded anywhere in this data: energy consumption」。\n\n若需要這個指標，得另外提供以下任一來源：\n- 機台電錶／能源管理系統（EMS）的用電紀錄\n- 電控櫃或主軸的電流／功率感測器時序資料\n\n目前可查到的是鋁屑警報、維修工單、PM 計畫與刀具更換等紀錄。若你其實想問的是別的（例如 M03 七月的警報次數、停機時間或維修工單），告訴我一聲，我馬上查。",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        },
+        {
+          "type": "lang_zh",
+          "pass": true,
+          "detail": "expected a Chinese answer"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 3577,
+      "input_tokens": 2629,
+      "output_tokens": 277
+    },
+    {
+      "id": "q20",
+      "category": "unanswerable",
+      "question": "Why is M09 alarming so often?",
+      "answer": "**M09 does not exist in this plant's data, so I can't explain an alarm pattern for it.**\n\nEvidence:\n- The `machines` table contains exactly 8 machines: **M01–M08** (Site A: L1/L2; Site B: L3). There is no M09.\n- The `alarms` table has events for only M01–M08 — `SELECT DISTINCT machine_id FROM alarms` returns 8 machines, none of them M09. A count of alarms for `machine_id = 'M09'` returns **0**.\n- The `work_orders` table likewise covers only M01–M08.\n\nSo there is no alarm data, maintenance history, or machine record for M09 to analyze. This isn't a case of \"few alarms\" — the machine simply isn't in the dataset.\n\nA couple of possibilities worth checking on your side:\n- **Typo / naming mismatch** — did you mean one of the existing machines? If you tell me which model or line you're thinking of, I can look it up. For reference: M01/M02/M04 = VMC-850, M03/M07 = VMC-1100, M05/M06/M08 = HMC-630.\n- **Different plant/site** — this database covers Site A and Site B only (data range 2026-06-01 to 2026-08-31). If M09 is at another site or was commissioned outside that window, its records would be in a different system.\n\nIf M09 is genuinely a real machine, the data needed to answer your question would be: its row in a machine master list, plus its alarm events, work orders and PM plan entries. None of those exist here. Which machine did you mean?",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 5,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 7281,
+      "input_tokens": 6871,
+      "output_tokens": 811
+    },
+    {
+      "id": "q21",
+      "category": "unanswerable",
+      "question": "What is the spindle vibration trend on M02 over the summer?",
+      "answer": "## Short answer\n\n**There is no spindle vibration data for M02 — or any machine — in this database.** The schema is explicit that vibration/sensor time series are *not recorded* anywhere (the database covers alarms, work orders, PM plans and tool changes only; there are no sensor, energy or production-count tables). So I cannot give you a vibration trend, and I won't invent one.\n\nWhat the data *does* let me show is the closest measurable proxy: **spindle alarm activity on M02 over summer (Jun–Aug 2026)**.\n\n## Spindle alarms on M02, summer 2026\n\n| Month | SP-101 (spindle overheat, high) | SP-102 (spindle load high, medium) |\n|---|---|---|\n| 2026-06 | 1 event (avg 18.5 min) | 4 events (avg 2.7 min) |\n| 2026-07 | 4 events (avg 25.4 min) | 10 events (avg 3.4 min) |\n| 2026-08 | 1 event (avg 27.6 min) | 5 events (avg 2.8 min) |\n\n**Reading:** spindle-related alarms on M02 peak sharply in **July** (SP-101 4× vs 1× in June and August; SP-102 10× vs 4–5×). Even where the count is low, the **downtime per overheat event grows** (18.5 → 25.4 → 27.6 min), consistent with a spindle degrading rather than a one-off.\n\n## Supporting notes (WO free text)\n\n- **WO-260063** (2026-07-10): \"SP-101 again, let spindle cool down and resumed\" — technician Huang. Note \"again,\" i.e. a repeat event.\n- **WO-260137** (2026-08-10): \"主軸負載高，粗加工進給調降\" (spindle load high, roughing feed reduced) — technician Liu.\n- **WO-260051** (2026-07-02): spindle bearing inspection PM — \"主軸軸承點檢完成，溫升正常\" (bearing check done, temperature rise normal).\n\nManual reference: SP-101 = spindle housing overheat (likely causes include bearing wear, lubrication failure, coolant flow to the spindle jacket, sustained high load); SP-102 = spindle load >120% rated for >5 s (dull/chipped tool, aggressive parameters, wrong offset).\n\n## Caveat / what would be needed\n\nVibration is *inferred* here from alarms and notes — that is a proxy, not a measurement. If you need an actual vibration trend, you'd need spindle vibration sensor data (or at minimum spindle temperature/load trend logging), which is outside this database. With what's available, the honest statement is: **spindle alarm frequency and overheat downtime on M02 rose noticeably in July and stayed elevated in August** — flagged for physical follow-up, not confirmed vibration.\n\nWant me to pull the full SP-101/SP-102 history with shift and axis, or check whether other machines show the same July spike (a shared-cause signal)?",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "search_documents",
+        "run_sql",
+        "run_sql",
+        "lookup_alarm_code",
+        "lookup_alarm_code"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 11890,
+      "input_tokens": 16479,
+      "output_tokens": 1844
+    },
+    {
+      "id": "q22",
+      "category": "unanswerable",
+      "question": "Which operator caused the emergency stops on M04?",
+      "answer": "I can't answer this from the available data — **operator identity is not recorded anywhere in this plant dataset.**\n\nWhat the data *does* show about the M04 emergency stops:\n\n- M04 has **8 EM-901 (Emergency stop)** events between 2026-06-05 and 2026-08-25 (A00044, A00064, A00230, A00305, A00518, A00727, A00810, A00960).\n- The `alarms` table records only `reset_by` (auto / operator / technician) and `shift` — **not** who pressed the button. For all 8 events, `reset_by = operator` (7 on night shift, 1 on day shift), but that field only tells you the reset was done by \"operator\" as a role, not which person.\n- The manual for EM-901 (MAN:alarm_codes#em-901) lists \"Operator action\" as the likely cause and recommends \"Confirm reason with operator\" — i.e., the reference itself assumes you go ask the operator, because the system doesn't log it.\n- Work order notes for M04 (e.g., WO-260024, WO-260049, WO-260052) name *technicians* (Huang, Wang, Lin), not operators, and none reference the e-stops.\n\nThe schema explicitly states that **operator identity for alarms is not recorded**. To attribute an e-stop to a person you would need a data source that doesn't exist here — e.g., an operator login/ID tied to the alarm timestamp, or a shift roster mapping the shift + machine to a named operator. If you can point me to a shift roster, I could at least narrow the candidates to whoever was assigned to M04 on those night shifts.\n\nWould you like me to pull the full timing pattern of these 8 e-stops (dates, times, durations) so you can cross-reference it against a roster yourself?",
+      "error": null,
+      "correct": true,
+      "check_details": [
+        {
+          "type": "refusal",
+          "pass": true,
+          "detail": "expected the agent to say the data is not available"
+        }
+      ],
+      "evidence_cited": null,
+      "tool_calls": 5,
+      "tool_errors": 0,
+      "tools_used": [
+        "get_schema",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "search_documents"
+      ],
+      "hit_step_limit": false,
+      "latency_ms": 9936,
+      "input_tokens": 10800,
+      "output_tokens": 1068
+    }
+  ]
+}
